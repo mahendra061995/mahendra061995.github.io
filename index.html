@@ -445,6 +445,10 @@
 
     footer { padding: 1.5rem 3.5rem 2.5rem; font-size: 12px; color: var(--text-light); border-top: 1px solid var(--border); }
 
+    /* ── PAGES (one visible at a time) ── */
+    .page { display: none; min-height: calc(100vh - 90px); }
+    .page.active { display: block; }
+
     /* ── MOBILE NAV ── */
     .mobile-nav-toggle {
       display: none;
@@ -504,8 +508,7 @@
     <div class="name">Mahendra<br>Singh</div>
   </div>
   <nav id="sideNav">
-    <a href="#top" class="active">Home</a>
-    <a href="#about">About</a>
+    <a href="#home" class="active">Home</a>
     <a href="#education">Education</a>
     <a href="#research">Research</a>
     <a href="#publications">Publications</a>
@@ -522,6 +525,8 @@
 </aside>
 
 <main id="top">
+
+  <div class="page" id="home">
 
   <!-- HERO -->
   <div class="hero">
@@ -561,7 +566,7 @@
   </div>
 
   <!-- ABOUT -->
-  <section id="about">
+  <section>
     <div class="section-label">About</div>
     <div class="about-text">
       <p>
@@ -582,8 +587,10 @@
     </div>
   </section>
 
+  </div><!-- /home -->
+
   <!-- EDUCATION -->
-  <section id="education">
+  <section class="page" id="education">
     <div class="section-label">Education</div>
     <div class="edu-row">
       <span class="edu-year">2021 – Present</span>
@@ -620,7 +627,7 @@
   </section>
 
   <!-- RESEARCH -->
-  <section id="research">
+  <section class="page" id="research">
     <div class="section-label">Research</div>
 
     <div class="theme-card">
@@ -687,7 +694,7 @@
   </section>
 
   <!-- PUBLICATIONS -->
-  <section id="publications">
+  <section class="page" id="publications">
     <div class="section-label">Publications</div>
     <ul class="pub-list">
       <li class="pub-item">
@@ -718,7 +725,7 @@
   </section>
 
   <!-- AWARDS -->
-  <section id="awards">
+  <section class="page" id="awards">
     <div class="section-label">Awards &amp; Fellowships</div>
     <ul class="award-list">
       <li class="award-item">
@@ -745,7 +752,7 @@
   </section>
 
   <!-- PHOTOGRAPHY -->
-  <section id="photography">
+  <section class="page" id="photography">
     <div class="section-label">Photography</div>
     <!--
       To add a photo:
@@ -770,7 +777,7 @@
   </section>
 
   <!-- NEWS -->
-  <section id="news">
+  <section class="page" id="news">
     <div class="section-label">News &amp; Links</div>
     <!--
       To add a news item: copy one <li class="news-item"> block,
@@ -801,7 +808,7 @@
   </section>
 
   <!-- CONTACT -->
-  <section id="contact">
+  <section class="page" id="contact">
     <div class="section-label">Contact</div>
     <div class="contact-list">
       <p>Open to research discussions, collaborations, and academic conversations.</p>
@@ -829,18 +836,18 @@
   });
   sidebar.querySelectorAll('nav a').forEach(a => a.addEventListener('click', () => sidebar.classList.remove('open')));
 
-  // Highlight the current section in the sidebar
+  // Page switching: one page visible at a time, driven by the URL hash
   const links = [...document.querySelectorAll('#sideNav a')];
-  const targets = links.map(a => document.querySelector(a.getAttribute('href')));
-  function setActive() {
-    const y = window.scrollY + window.innerHeight * 0.3;
-    let current = 0;
-    targets.forEach((t, i) => { if (t && t.id !== 'top' && t.offsetTop <= y) current = i; });
-    if (window.scrollY < 80) current = 0;
-    links.forEach((a, i) => a.classList.toggle('active', i === current));
+  const pages = [...document.querySelectorAll('.page')];
+  function showPage() {
+    let id = location.hash.slice(1);
+    if (!pages.some(p => p.id === id)) id = 'home';
+    pages.forEach(p => p.classList.toggle('active', p.id === id));
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+    window.scrollTo(0, 0);
   }
-  window.addEventListener('scroll', setActive, { passive: true });
-  setActive();
+  window.addEventListener('hashchange', showPage);
+  showPage();
 
   // Lightbox
   const lightbox = document.getElementById('lightbox');
